@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "nixbiks.server-mode",
+  "name": "Server Mode",
+  "version": "1.0.0",
+  "author": "nixbiks",
+  "license": "MIT",
+  "description": "Toggle the machine between an always-on office box and an ordinary laptop, and show whether the internal panel is lit behind a shut lid.",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Widget.qml" },
+  "barWidget": {
+    "displayName": "Server Mode",
+    "description": "Lid-shut always-on mode: virtual output, Sunshine, no-sleep. Warns when the OLED panel is lit behind a closed lid.",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": { "refreshIntervalSec": 5 },
+    "schema": [
+      {
+        "key": "refreshIntervalSec",
+        "type": "integer",
+        "label": "Refresh interval (seconds)",
+        "min": 1,
+        "max": 300,
+        "step": 1,
+        "defaultValue": 5
+      }
+    ]
+  }
+}

@@ -1,0 +1,56 @@
+#!/bin/bash
+# link — make every plugin in this repo discoverable by omarchy-shell.
+#
+# `omarchy plugin add <git-url>` clones one plugin per repo into
+# ~/.config/omarchy/plugins/<manifest.id>/, which rules out a monorepo. But
+# discovery is `find -L ~/.config/omarchy/plugins -mindepth 2 -maxdepth 2 -type f
+# -name manifest.json` (omarchy-plugin-catalog) — `find -L` follows symlinks, so
+# a symlink at exactly that depth is indistinguishable from a clone. That is what
+# this creates, and it is why several plugins can live in one repo.
+#
+# Consequence worth knowing: `omarchy plugin add` refuses a path that already
+# exists, and `omarchy plugin update <id>` would git-pull this whole repo. Manage
+# these with git here, not with the plugin subcommands.
+#
+# Exit: 0 = linked, 1 = something was in the way.
+set -euo pipefail
+
+SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEST="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/plugins"
+
+die() { echo "link: $*" >&2; exit 1; }
+
+command -v jq >/dev/null || die "jq is not on PATH"
+mkdir -p "$DEST"
+
+status=0
+for manifest in "$SELF_DIR"/*/manifest.json; do
+  [[ -f $manifest ]] || continue
+  src="$(dirname "$manifest")"
+  id="$(jq -r '.id // empty' "$manifest")"
+  [[ -n $id ]] || { echo "  skip $(basename "$src") — manifest has no id"; status=1; continue; }
+
+  target="$DEST/$id"
+  if [[ -L $target ]]; then
+    if [[ "$(readlink -f "$target")" == "$src" ]]; then
+      echo "  ok      $id"
+    else
+      ln -sfn "$src" "$target"
+      echo "  relink  $id"
+    fi
+  elif [[ -e $target ]]; then
+    # A real directory here is a clone someone made with `omarchy plugin add`.
+    # Replacing it would throw away a git repo this script does not own.
+    echo "  IN USE  $id — $target is a real directory, not ours to replace"
+    status=1
+  else
+    ln -s "$src" "$target"
+    echo "  link    $id"
+  fi
+done
+
+if command -v omarchy-shell >/dev/null; then
+  omarchy-shell shell rescanPlugins >/dev/null 2>&1 || true
+fi
+
+exit $status
