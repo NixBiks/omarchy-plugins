@@ -77,8 +77,8 @@ BarWidget {
 
     if (warning === "panel-lit-behind-shut-lid")
       lines.push("\n⚠ The panel is lit behind a shut lid with idle blanking off.\n"
-        + "No DRM external means Omarchy's clamshell never fires.\n"
-        + "Attach a display or a dummy plug, or leave server mode.")
+        + "server-mode's panel guard should have turned it off within 30s —\n"
+        + "if this persists, check: systemctl --user status server-mode-panel-guard")
 
     lines.push("\nClick to " + (server ? "go back to an ordinary laptop" : "start server mode"))
     return lines.join("\n")
