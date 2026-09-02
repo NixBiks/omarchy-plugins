@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "nixbiks.webcam",
+  "name": "Webcam",
+  "version": "1.0.0",
+  "author": "nixbiks",
+  "license": "MIT",
+  "description": "Turn the IPU6 webcam bridge on and off. Off, the camera costs nothing; on, the relay takes ~10% of a core whether or not anything reads it.",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Widget.qml" },
+  "barWidget": {
+    "displayName": "Webcam",
+    "description": "On-demand IPU6 camera bridge (v4l2-relayd@ipu7). Lit means the relay is running and paying for it; warns when it runs without being asked.",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": { "refreshIntervalSec": 5 },
+    "schema": [
+      {
+        "key": "refreshIntervalSec",
+        "type": "integer",
+        "label": "Refresh interval (seconds)",
+        "min": 1,
+        "max": 300,
+        "step": 1,
+        "defaultValue": 5
+      }
+    ]
+  }
+}

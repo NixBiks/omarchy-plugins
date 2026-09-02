@@ -6,6 +6,7 @@ at its root, exactly as Omarchy expects — but several of them in one repo.
 | plugin | id | kind | what it does |
 |---|---|---|---|
 | [server-mode](server-mode/) | `nixbiks.server-mode` | `bar-widget` | Toggle the always-on office box, and warn when the OLED panel is lit behind a shut lid |
+| [webcam](webcam/) | `nixbiks.webcam` | `bar-widget` | Toggle the on-demand IPU6 camera bridge; lit while the relay runs (and costs ~10% of a core) |
 
 ## Install
 
