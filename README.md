@@ -7,6 +7,7 @@ at its root, exactly as Omarchy expects — but several of them in one repo.
 |---|---|---|---|
 | [server-mode](server-mode/) | `nixbiks.server-mode` | `bar-widget` | Toggle the always-on office box, and warn when the OLED panel is lit behind a shut lid |
 | [webcam](webcam/) | `nixbiks.webcam` | `bar-widget` | Toggle the on-demand IPU6 camera bridge; lit while the relay runs (and costs ~10% of a core) |
+| [gcloud-auth](gcloud-auth/) | `nixbiks.gcloud-auth` | `bar-widget` | A bar that runs down as the gcloud session runs out; click to sign in again |
 
 ## Install
 
@@ -44,6 +45,12 @@ Enabling still works normally: `omarchy plugin enable/disable <id>` writes to
 `bar.layout` in `~/.config/omarchy/shell.json`. **If that file is stowed from a
 dotfiles repo, `enable` rewrites it in place and replaces the symlink** — edit
 the repo copy and relink instead.
+
+After you edit a plugin here, run `omarchy restart shell`. The shell finds changes
+with `inotifywait -r` on `~/.config/omarchy/plugins`, which does not follow the
+symlinks that `./link` makes. `omarchy-shell shell rescanPlugins` does not help
+either: it keeps any component that a live widget still uses, so the old code
+stays loaded.
 
 ## Writing another one
 
