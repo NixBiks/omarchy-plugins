@@ -13,13 +13,14 @@ gcloud:
 
 - The result of the last check, which the `gcloud-auth-watch.timer` systemd user
   timer writes every five minutes.
-- The start of the current session: the first sign-in after a check saw the
-  credentials expire.
+- The start of the current session: the last sign-in through the widget or the
+  toast, or the first passing check after a failed one.
 
-A sign-in while the credentials still work does not move the end of the session.
-On 2026-10-03, a sign-in at 10:41 left the end at 18:58, which was 24 hours after
-the sign-in that followed the previous expiry. For this reason, the widget does not
-start the countdown again at every sign-in.
+A sign-in that reuses the browser's Google session while the credentials still
+work does not move the end of the session. A sign-in from a private window does:
+on 2026-10-04 the session ended at 20:59, 24 hours after a private sign-in and
+not after the earlier one. For this reason, `gcloud-auth-watch sign-in` uses a
+private window, with the email filled in, while the session still works.
 
 The end time is an estimate: session start plus `sessionHours` (default 24). Google
 does not tell the client when the session ends, so set `sessionHours` to the
