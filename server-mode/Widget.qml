@@ -1,7 +1,7 @@
 // Server Mode — bar widget over the `server-mode` script.
 //
 // This is UI only. Every fact comes from `server-mode probe` and the toggle is
-// `server-mode toggle`; nothing about virtual outputs, Sunshine or the clamshell
+// `server-mode toggle`; nothing about virtual outputs, gliff or the clamshell
 // is decided here. That split is deliberate — the mechanism lives beside its
 // contract test in the dotfiles repo, and duplicating any of it in QML would
 // make this a second opinion about state the script already owns.
@@ -9,8 +9,9 @@
 // It replaces a `type: "command"` bar module that could only ever render one
 // glyph and one tooltip line. The reason it is worth more than that is `warn`:
 // in server mode with the lid shut and no DRM-connected external, Omarchy's
-// clamshell never fires, so the internal panel stays lit with idle DPMS
-// suppressed — a burn-in risk on an OLED that nothing else surfaces.
+// clamshell never disables the internal panel, so it stays lit with idle DPMS
+// suppressed until server-mode's panel guard switches it off — a burn-in risk on
+// an OLED, so a guard that stopped working must be visible here.
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -61,12 +62,12 @@ BarWidget {
 
     lines.push("Virtual output: " + (state.output ? state.output : "none"))
 
-    var sun = state.sunshine || {}
-    if (sun.active)
-      lines.push("Sunshine: streaming " + (sun.pinned || "?")
-        + (sun.pinMatches ? "" : "  ⚠ pinned to an output that is not live"))
-    else
-      lines.push("Sunshine: stopped" + (sun.pinned ? " (pinned " + sun.pinned + ")" : ""))
+    // `server-mode off` refuses while someone is connected, so say so before the
+    // click rather than after it.
+    if (state.gliffConnected)
+      lines.push("gliff: connected — disconnect before leaving server mode")
+    else if (server)
+      lines.push("gliff: nobody connected")
 
     if (state.internal)
       lines.push("Internal panel: " + state.internal.name + " "
